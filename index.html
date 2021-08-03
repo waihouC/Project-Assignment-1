@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+   integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+   crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
+    <!-- Bootstrap CSS -->
+    <!-- <link href="bootstrap\css\bootstrap.min.css" rel="stylesheet" /> -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="bootstrap\bootstrap-social\bootstrap-social.css" rel="stylesheet" />
+    <link href="fontawesome-5.15.3\css\all.css" rel="stylesheet" />
+
+    <!-- Custom CSS -->
+    <link href="styles\style.css" rel="stylesheet" />
+    <title>HawkerGoWhere.sg</title>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-light bg-warning pb-0">
+        <div class="container-fluid pb-2">
+          <a class="navbar-brand mx-auto fs-2" href="#">
+            <img src="images\pin-icon.png" alt="" width="50" height="50" class="d-inline-block align-text-center">
+            HawkerGoWhere.sg
+          </a>
+        </div>
+        <div class="container-fluid navbar-light gray-300">
+            <span class="navbar-text mx-auto">
+                Your One-stop Hawker Guide
+            </span>
+        </div>
+    </nav>
+
+    <!-- Map -->
+    <map>
+      <div class="row justify-content-center mt-3">
+        <div class="col-12 col-lg-9">
+          <div id="map"></div>
+        </div>
+      </div>
+    </map>
+    
+    <!-- Section -->
+    <section>
+      
+      
+    </section>
+
+    <!-- Hidden -->
+    <div id="feedback-form" class="d-none">
+      <div class="form-group">
+        <div class="font-size-sm fst-italic">(max 500 characters)</div>
+        <textarea class="form-control" id="feedback_textarea" maxlength="500"></textarea>
+        <button class="btn btn-primary btn-sm mt-2" id="feedback-submit">Submit</button>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container-fluid">
+        <div class="row gray-300 p-3">
+          <!-- social media -->
+          <div class="col-12 col-lg-6 d-flex align-items-center justify-content-center">
+            <span>Get connected with us on social network:</span>
+            <a href="#" class="mx-2 text-reset">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="#" class="mx-2 text-reset">
+              <i class="fab fa-twitter"></i>
+            </a>
+            <a href="#" class="mx-2 text-reset">
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a href="#" class="mx-2 text-reset">
+              <i class="fab fa-tumblr"></i>
+            </a>
+          </div>
+          <!-- links -->
+          <div class="col-12 col-lg-6 d-flex align-items-center justify-content-center footer-links">
+            <h5>LINKS</h5>
+            <a tabindex="0" class="text-reset popover-about" role="button" data-toggle="popover">About</a>
+            <a tabindex="0" class="text-reset popover-feedback" role="button" data-toggle="popover">Feedback</a>
+            <a tabindex="0" class="text-reset popover-contact" role="button" data-toggle="popover">Contact Us</a>
+          </div>
+        </div>
+      </div>
+      <div class="text-center p-3 bg-dark text-white">
+        &copy; HawkerGoWhere 2021
+      </div>
+    </footer>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+   integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+   crossorigin=""></script>
+   <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster-src.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.min.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.4.3/proj4.js"></script>
+   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+    <!-- jQuery -->
+    <!-- <script src="scripts\jquery\dist\jquery.min.js"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <!-- <script src="bootstrap\scripts\bootstrap.bundle.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <!-- SVG with JavaScript -->
+    <script src="fontawesome-5.15.3\js\all.js"></script>
+    
+    <!-- Custom scripts -->
+    <script src="scripts\script.js"></script>
+  </body>
+</html>

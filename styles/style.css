@@ -1,0 +1,40 @@
+body {
+    margin: 0;
+}
+
+.gray-300 {
+    background-color: #E0E0E0;
+}
+
+#map {
+    height: 80vh;
+}
+
+section {
+    height: 50vh;
+}
+
+.footer-links>* {
+    padding: 10px;
+    margin: 0px;
+    text-decoration: none;
+}
+
+/* inside Popper */
+.popover-header {
+    background-color: #ffc107 !important; 
+}
+
+.close {
+    float: right;
+}
+
+.form-floating {
+    height: 150px;
+}
+
+textarea {
+    resize: none;
+    height: 150px !important;
+    width: 240px !important;
+}
