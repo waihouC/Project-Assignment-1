@@ -1,5 +1,5 @@
 body {
-    margin: 0;
+    margin: 0px;
 }
 
 .gray-300 {
@@ -10,8 +10,33 @@ body {
     height: 80vh;
 }
 
-section {
-    height: 50vh;
+#search {
+    height: 10vh;
+    background-color: #ffc107
+}
+
+.leaflet-control-geocoder-form input {
+    width: 80vw !important;
+    height: 6vh !important;
+}
+
+.leaflet-control-geocoder-alternatives > li{
+    width: 86vw !important;
+} 
+
+@media screen and (min-width: 900px) {
+    .leaflet-control-geocoder-form input{
+        width: 50vw !important;
+    }
+
+    .leaflet-control-geocoder-alternatives > li {
+        width: 51vw !important;
+    }
+}
+
+#info {
+    height: 30vh;
+    background-color: skyblue;
 }
 
 .footer-links>* {
@@ -33,7 +58,7 @@ section {
     height: 150px;
 }
 
-textarea {
+#feedback_textarea {
     resize: none;
     height: 150px !important;
     width: 240px !important;
