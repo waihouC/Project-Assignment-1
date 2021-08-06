@@ -13,13 +13,14 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
 
     <!-- Bootstrap CSS -->
-    <!-- <link href="bootstrap\css\bootstrap.min.css" rel="stylesheet" /> -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link href="bootstrap\bootstrap-social\bootstrap-social.css" rel="stylesheet" />
-    <link href="fontawesome-5.15.3\css\all.css" rel="stylesheet" />
+    <link href="styles\bootstrap\css\bootstrap.min.css" rel="stylesheet" />
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"> -->
+    <link href="styles\bootstrap-social\bootstrap-social.css" rel="stylesheet" />
+    <link href="styles\fontawesome-5.15.3\css\all.css" rel="stylesheet" />
 
     <!-- Custom CSS -->
     <link href="styles\style.css" rel="stylesheet" />
+
     <title>HawkerGoWhere.sg</title>
   </head>
   <body>
@@ -40,16 +41,24 @@
 
     <!-- Map -->
     <map>
-      <div class="row justify-content-center mt-3">
+      <div class="row justify-content-center my-5">
         <div class="col-12 col-lg-9">
           <div id="map"></div>
         </div>
       </div>
     </map>
     
-    <!-- Section -->
-    <section>
-      
+    <!-- Search -->
+    <section id="search">
+      <div class="row justify-content-center">
+        <div class="col-11 col-lg-7">
+          <div id="search-box" class="d-flex justify-content-center py-3"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Info -->
+    <section id="info">
       
     </section>
 
@@ -106,16 +115,20 @@
    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
     <!-- jQuery -->
-    <!-- <script src="scripts\jquery\dist\jquery.min.js"></script> -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="scripts\lib\jquery\dist\jquery.min.js"></script>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> -->
 
     <!-- Bootstrap Bundle with Popper -->
-    <!-- <script src="bootstrap\scripts\bootstrap.bundle.min.js"></script> -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="styles\bootstrap\js\bootstrap.bundle.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->
     <!-- SVG with JavaScript -->
-    <script src="fontawesome-5.15.3\js\all.js"></script>
+    <script src="styles\fontawesome-5.15.3\js\all.js"></script>
+    
+    <!-- Moment JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     
     <!-- Custom scripts -->
+    <script src="scripts\lib\papaparse.min.js"></script>
     <script src="scripts\script.js"></script>
   </body>
 </html>
