@@ -1,7 +1,11 @@
+// for map routing
+const apiKey = "AAPK9abd9dbf54824a1e8fe9aa72c37a2e80DXEKAeaFoJ0DHezwYFSklOyOOyaBnnRbvQonKCy2vFkIJCDRqxKYsOHqQlnHWDme";
+const basemapEnum = "ArcGIS:Navigation";
+
 // set up sg map
 let sgp = [1.35, 103.84];
 let map = L.map('map').setView(sgp, 12);
-map.setMaxBounds(map.getBounds());
+map.setMaxBounds(map.getBounds().pad(1));
 // set min zoom based on screen size
 let mq = window.matchMedia("(max-width: 768px)");
 if (mq.matches) {
@@ -19,10 +23,31 @@ L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
     accessToken: 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw'
 }).addTo(map);
 
-// create marker cluster layer
+L.esri.Vector.vectorBasemapLayer(basemapEnum, {
+    apiKey: apiKey
+}).addTo(map);
+
+// create custom start icon
+const startIcon = L.icon({
+    iconUrl: 'images/start-pin-orange.png',
+    iconSize: [25, 42],
+    iconAnchor: [0, 0]
+})
+
+// create marker cluster layer group
 let markerClusterLayer = L.markerClusterGroup();
 
-const openedStatus = "<span style='color: green'>Available</span>"
+// create layer groups for map routing
+let startPointLayer = L.layerGroup();
+let routeLinesLayer = L.layerGroup();
+
+const WAIT = "wait" // indicate map waiting for map routing
+const START = "start" // indicate map creating start point
+
+let currentStep = WAIT;
+let startCoords, endCoords;
+
+const openedStatus = "<span style='color: green'>Open</span>"
 const closedStatus = "<span style='color: red'>Closed</span>"
 
 function DateWithinInterval(startDate, endDate) {
@@ -72,7 +97,9 @@ async function getHawkerLayer(csvData) {
                     'q4_cleaningstartdate': row.q4_cleaningstartdate,
                     'q4_cleaningenddate': row.q4_cleaningenddate,
                     'others_startdate': row.other_works_startdate,
-                    'others_enddate': row.other_works_enddate
+                    'others_enddate': row.other_works_enddate,
+                    'latitude_hc': row.latitude_hc,
+                    'longitude_hc': row.longitude_hc
                 }
             });
             // logging
@@ -83,7 +110,10 @@ async function getHawkerLayer(csvData) {
             // take care of records with no data
             let description = (hawkerData == "" || hawkerData == undefined) ? "" : hawkerData[0].description;
             let foodstalls = (hawkerData == "" || hawkerData == undefined) ? "" : hawkerData[0].foodstalls;
-            // create a <span> tag for availability
+            let lat_coord = (hawkerData == "" || hawkerData == undefined) ? "" : hawkerData[0].latitude_hc;
+            let lng_coord = (hawkerData == "" || hawkerData == undefined) ? "" : hawkerData[0].longitude_hc;
+
+            // use a <span> tag for availability
             let status;
             if (hawkerData == "" || hawkerData == undefined) {
                 status = openedStatus;
@@ -155,26 +185,116 @@ async function getHawkerLayer(csvData) {
                         <img src="${photourl}" style="width: 300px" />
                     </td>
                 </tr>
+                <tfoot>
+                    <td colspan="2">
+                        <a class="btn btn-success active" role="button" onClick="getDirections(${lat_coord}, ${lng_coord}, '${name}')">Get Directions</a>
+                    </td>
+                </tfoot>
             </table>`);
         }
     }).addTo(markerClusterLayer);
 };
 
 // load CSV file data and combine with geojson
-function loadHawkerData() {
-    // papaparse is used to parse csv file into json string
-    Papa.parse('data/dates-of-hawker-centres-closure.csv', {
-        download: true,
-        header: true,
-        complete: async function(results) {
-            await getHawkerLayer(results.data);
-        }
+async function loadHawkerData() {
+    let response = await axios.get('data/dates-of-hawker-centres-closure.csv');
+    let json = await csv().fromString(response.data);
+    await getHawkerLayer(json);
+}
+
+window.addEventListener('DOMContentLoaded', async () => {
+    await loadHawkerData();
+    markerClusterLayer.addTo(map);
+});
+
+// Get Directions custom map control
+L.Control.Direction = L.Control.extend({
+    onAdd: function(map) {
+        var div = L.DomUtil.create('div', 'leaflet-container div-direction');
+        div.innerHTML = "Click on the map to create a start point.";
+        // make the control not clickable
+        L.DomEvent.on(div, 'click', L.DomEvent.stopPropagation);
+        return div;
+    },
+
+    onRemove: function(map) {
+        // nothing to do here
+    }
+});
+
+L.control.direction = function(opts) {
+    return new L.Control.Direction(opts);
+};
+
+let destName;
+let divDirection;
+let infoDirection = document.getElementById("info-direction");
+
+// Get Directions button click
+function getDirections(lat, lng, name) {
+    endCoords = [ lng, lat ];
+    destName = name;
+    divDirection = L.control.direction({ position: 'topright'}).addTo(map);
+    currentStep = START;
+}
+
+function updateRoute() {
+    // create the arcgis-rest-js authentication object to use later
+    const authentication = new arcgisRest.ApiKey({
+      key: apiKey
+    });
+
+    // make the API request
+    arcgisRest
+      .solveRoute({
+        stops: [startCoords, endCoords],
+        endpoint: "https://route-api.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve",
+        authentication
+      })
+      .then((response) => {
+        // show the result route on the map
+        routeLinesLayer.clearLayers();
+        L.geoJSON(response.routes.geoJson).addTo(routeLinesLayer);
+        routeLinesLayer.addTo(map);
+
+        // show the result text directions in info-direction div
+        let directionsHTML = response.directions[0].features.map((f) => f.attributes.text).join("<br/>");
+        directionsHTML = directionsHTML.replace("Location 1", "Start point");
+        directionsHTML = directionsHTML.replace("Location 2", "Destination");
+        infoDirection.className = "d-block";
+        infoDirection.innerHTML = "<p>From Start point to " + destName + ":</p>";
+        infoDirection.innerHTML += directionsHTML;
+
+        startCoords = null;
+        endCoords = null;
+      })
+      .catch((error) => {
+        console.error(error);
+        alert("There was a problem using the route service. Try again later.");
     });
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-    loadHawkerData();
-    markerClusterLayer.addTo(map);
+// When the map is clicked, get the start coordinates, 
+// and pass start and end coordinates to the updateRoute function 
+// which calls the REST endpoint.
+map.on("click", (e) => {
+    const coordinates = [e.latlng.lng, e.latlng.lat];
+
+    if (currentStep === START) {
+        startPointLayer.clearLayers();
+        routeLinesLayer.clearLayers();
+
+        L.marker(e.latlng, {icon: startIcon}).addTo(startPointLayer);
+        startPointLayer.addTo(map);
+        startCoords = coordinates;
+        currentStep = WAIT;
+        divDirection.remove(map);
+    }
+
+    // ensure both start and end coordinates are defined
+    if (startCoords && endCoords) {
+        updateRoute();
+    }
 });
 
 // popovers at footer links
