@@ -63,3 +63,22 @@ body {
     height: 150px !important;
     width: 240px !important;
 }
+
+.div-direction {
+    font-family: Arial, Helvetica, Verdana;
+    font-size: 30px;
+}
+
+#info-direction {
+    max-height: 27vh;
+    overflow-y: auto; /* Show a scrollbar if needed */
+    background: white;
+    font-family: Arial, Helvetica, Verdana;
+    line-height: 1.5;
+    padding: 10px;
+    margin-top: 15px;
+}
+
+#info-direction > p {
+    font-weight: bold;
+}
