@@ -228,7 +228,7 @@ L.control.direction = function(opts) {
 
 let destName;
 let divDirection;
-let infoDirection = document.getElementById("info-direction");
+let infoDirection = document.getElementById('info-direction');
 
 // Get Directions button click
 function getDirections(lat, lng, name) {
@@ -302,8 +302,10 @@ $(function () {
     $('.popover-about').popover({
         html: true,
         placement: 'top',
-        title: 'About the site<a class="btn-close btn-sm close" role="button" aria-label="Close"></a>',
-        content: 'HelloHelloHelloHelloHelloHelloHello'
+        title: 'About Us<a class="btn-close btn-sm close" role="button" aria-label="Close"></a>',
+        content: '<p>HawkerGoWhere.sg is an info-site about your favourite hawker places in Singapore.</p>' + 
+                  '<p>Whether you are a local or a visitor to our sunny island, you can find all ' +
+                  'you need to know to explore our UNESCO recognised hawker culture.</p>'
     }).on('click', function (e) {
         // hide all other popovers
         $('[data-toggle="popover"]').not(e.target).popover('hide');
@@ -313,7 +315,7 @@ $(function () {
         html: true,
         sanitize: false,
         placement: 'top',
-        title: 'Summit your feedback<a class="btn-close btn-sm close" role="button" aria-label="Close"></a>',
+        title: 'Give your feedback<a class="btn-close btn-sm close" role="button" aria-label="Close"></a>',
         content: function () {
             return $('#feedback-form').html();
         }
@@ -326,7 +328,7 @@ $(function () {
         html: true,
         placement: 'top',
         title: 'Contact Us<a class="btn-close btn-sm close" role="button" aria-label="Close"></a>',
-        content: 'HelloHelloHelloHelloHelloHelloHello'
+        content: 'We are open for collaborations, ideas and new hires. Drop us an email at <a href="#">contact@hawkergowhere.sg</a>.'
     }).on('click', function (e) {
         // hide all other popovers
         $('[data-toggle="popover"]').not(e.target).popover('hide');
@@ -334,6 +336,19 @@ $(function () {
 
     $(document).on('click', '.popover .close', function () {
         $(this).parents('.popover').popover('hide');
+        // clear feedback form
+        $('.popover #thanks-msg').attr('class', 'd-none');
+        $('.popover #feedback-textarea').val("");
+    });
+
+    $(document).on('click', '.popover #feedback-submit', function () {
+        var feedback = $.trim($('.popover #feedback-textarea').val());
+        console.log(feedback);
+        if (feedback !== "") {
+            // show thank you message
+            $('.popover #thanks-msg').attr('class', 'd-block ps-2');
+            $('.popover #feedback-textarea').val("");
+        }
     });
 })
 
@@ -368,6 +383,6 @@ geocoder.on('markgeocode', function(e) {
 }).addTo(map);
 
 // pull the geocoder search out of map
-document.getElementById('search-box').appendChild(
+document.querySelector('#search-box').appendChild(
     document.querySelector(".leaflet-control-geocoder")
 );
