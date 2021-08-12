@@ -70,8 +70,11 @@
     <div id="feedback-form" class="d-none">
       <div class="form-group">
         <div class="font-size-sm fst-italic">(max 500 characters)</div>
-        <textarea class="form-control" id="feedback_textarea" maxlength="500"></textarea>
-        <button class="btn btn-primary btn-sm mt-2" id="feedback-submit">Submit</button>
+        <textarea class="form-control" id="feedback-textarea" maxlength="500"></textarea>
+        <div class="d-flex align-items-center mt-2">
+          <button class="btn btn-primary btn-sm" id="feedback-submit">Submit</button>
+          <span class="d-none" id="thanks-msg">Thank you for your feedback!</span>
+        </div>
       </div>
     </div>
 
@@ -81,7 +84,7 @@
         <div class="row gray-300 p-3">
           <!-- social media -->
           <div class="col-12 col-lg-6 d-flex align-items-center justify-content-center">
-            <span>Get connected with us on social network:</span>
+            <span>Follow us on social media:</span>
             <a href="#" class="mx-2 text-reset">
               <i class="fab fa-facebook-f"></i>
             </a>
@@ -98,8 +101,8 @@
           <!-- links -->
           <div class="col-12 col-lg-6 d-flex align-items-center justify-content-center footer-links">
             <h5>LINKS</h5>
-            <a tabindex="0" class="text-reset popover-about" role="button" data-toggle="popover">About</a>
-            <a tabindex="0" class="text-reset popover-feedback" role="button" data-toggle="popover">Feedback</a>
+            <a tabindex="0" class="text-reset popover-about" role="button" data-toggle="popover">About Us</a>
+            <a tabindex="0" class="text-reset popover-feedback" role="button" data-toggle="popover">Give Feedback</a>
             <a tabindex="0" class="text-reset popover-contact" role="button" data-toggle="popover">Contact Us</a>
           </div>
         </div>
