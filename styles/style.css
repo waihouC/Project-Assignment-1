@@ -46,6 +46,10 @@ body {
 }
 
 /* inside Popper */
+.popover {
+    max-width: 300px;
+}
+
 .popover-header {
     background-color: #ffc107 !important; 
 }
@@ -58,10 +62,10 @@ body {
     height: 150px;
 }
 
-#feedback_textarea {
+#feedback-textarea {
     resize: none;
     height: 150px !important;
-    width: 240px !important;
+    width: 260px !important;
 }
 
 .div-direction {
