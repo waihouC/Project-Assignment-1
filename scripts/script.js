@@ -27,15 +27,33 @@ L.esri.Vector.vectorBasemapLayer(basemapEnum, {
     apiKey: apiKey
 }).addTo(map);
 
-// create custom start icon
+// create 'hawker only' icon
+const hawkerIcon = L.icon({
+    iconUrl: 'images/hawker-pin-icon.png',
+    iconSize: [40, 40],
+    iconAnchor: [22, 40],
+    popupAnchor: [-2, -33]
+});
+
+// create 'hawker and market' icon
+const marketIcon = L.icon({
+    iconUrl: 'images/market-pin-icon.png',
+    iconSize: [25, 42],
+    iconAnchor: [10, 42],
+    popupAnchor: [3, -35]
+});
+
+// create start icon
 const startIcon = L.icon({
     iconUrl: 'images/start-pin-orange.png',
     iconSize: [25, 42],
     iconAnchor: [0, 0]
-})
+});
 
-// create marker cluster layer group
-let markerClusterLayer = L.markerClusterGroup();
+// create marker cluster layer groups
+let defaultClusterLayer = L.markerClusterGroup();
+let hawkerClusterLayer = L.markerClusterGroup();
+let marketClusterLayer = L.markerClusterGroup();
 
 // create layer groups for map routing
 let startPointLayer = L.layerGroup();
@@ -50,32 +68,48 @@ let startCoords, endCoords;
 const openedStatus = "<span style='color: green'>Open</span>"
 const closedStatus = "<span style='color: red'>Closed</span>"
 
-function DateWithinInterval(startDate, endDate) {
+function DateWithinInterval(start, end) {
+    let startDate = moment(start, 'D/M/YYYY');
+    let endDate = moment(end, 'D/M/YYYY');
+
     // check inputs are valid dates
-    var isStartDateValid = moment(startDate, "D/M/YYYY").isValid();
-    var isEndDateValid = moment(endDate, "D/M/YYYY").isValid();
+    var isStartDateValid = startDate.isValid();
+    var isEndDateValid = endDate.isValid();
     if (!isStartDateValid || !isEndDateValid) {
         return false;
     }
     
-    const now = moment().format("D/M/YYYY");
-    return moment(now).isBetween(startDate, endDate, undefined, "[]");
+    return moment().isBetween(startDate, endDate, undefined, '[]');
 }
 
-// load hawker markers into cluster layer
-async function getHawkerLayer(csvData) {
+// load CSV file data
+async function loadCSVHawkerData() {
+    let response = await axios.get('data/dates-of-hawker-centres-closure.csv');
+    let json = await csv().fromString(response.data);
+    return json;
+}
+
+// load GEOJSON file data
+async function loadGEOJSONHawkerData() {
     let response = await axios.get("data/hawker-centres.geojson");
-    L.geoJson(response.data, {
-        filter: function (feature, layer) {
-            // filter away 'under construction' status
-            return (!feature.properties.Description.toLowerCase().includes("under construction"));
-        },
+    let data = response.data.features.filter(function(feature) {
+        // filter away 'under construction' status
+        return (!feature.properties.Description.toLowerCase().includes("under construction"));
+    })
+    return data;
+}
+
+// load all hawker markers into corresponding cluster layers
+function createMapLayers(csvData, geoData) {
+    L.geoJson(geoData, {
         onEachFeature: function (feature, layer) {
             let e = document.createElement('div');
             e.innerHTML = feature.properties.Description;
             let tds = e.querySelectorAll('td');
 
             // extract geojson info
+            // coordinates format: lnglat
+            let coordinates = [ feature.geometry.coordinates[0], feature.geometry.coordinates[1] ];
             let photourl = tds[17].innerHTML;
             let name = tds[19].innerHTML;
             let address = tds[29].innerHTML;
@@ -88,6 +122,7 @@ async function getHawkerLayer(csvData) {
                     'name': row.name,
                     'description': row.description_myenv,
                     'foodstalls': row.no_of_food_stalls,
+                    'marketstalls': row.no_of_market_stalls,
                     'q1_cleaningstartdate': row.q1_cleaningstartdate,
                     'q1_cleaningenddate': row.q1_cleaningenddate,
                     'q2_cleaningstartdate': row.q2_cleaningstartdate,
@@ -97,36 +132,54 @@ async function getHawkerLayer(csvData) {
                     'q4_cleaningstartdate': row.q4_cleaningstartdate,
                     'q4_cleaningenddate': row.q4_cleaningenddate,
                     'others_startdate': row.other_works_startdate,
-                    'others_enddate': row.other_works_enddate,
-                    'latitude_hc': row.latitude_hc,
-                    'longitude_hc': row.longitude_hc
+                    'others_enddate': row.other_works_enddate
                 }
             });
             // logging
             if (hawkerData == "" || hawkerData == undefined) {
-                console.log('No record for ' + name);
+                console.log("No record for " + name);
             }
 
             // take care of records with no data
             let description = (hawkerData == "" || hawkerData == undefined) ? "" : hawkerData[0].description;
             let foodstalls = (hawkerData == "" || hawkerData == undefined) ? "" : hawkerData[0].foodstalls;
-            let lat_coord = (hawkerData == "" || hawkerData == undefined) ? "" : hawkerData[0].latitude_hc;
-            let lng_coord = (hawkerData == "" || hawkerData == undefined) ? "" : hawkerData[0].longitude_hc;
+            let marketstalls = (hawkerData == "" || hawkerData == undefined) ? "" : hawkerData[0].marketstalls;
+            let hasMarket = (marketstalls != "" && marketstalls > 1) ? true : false;
 
             // use a <span> tag for availability
             let status;
+            let estOpenDate; // indicate when hawker center reopen
             if (hawkerData == "" || hawkerData == undefined) {
                 status = openedStatus;
             } else {
-                if (DateWithinInterval(hawkerData[0].q1_cleaningstartdate, hawkerData[0].q1_cleaningenddate) ||
-                    DateWithinInterval(hawkerData[0].q2_cleaningstartdate, hawkerData[0].q2_cleaningenddate) ||
-                    DateWithinInterval(hawkerData[0].q3_cleaningstartdate, hawkerData[0].q3_cleaningenddate) ||
-                    DateWithinInterval(hawkerData[0].q4_cleaningstartdate, hawkerData[0].q4_cleaningenddate) ||
-                    DateWithinInterval(hawkerData[0].others_startdate, hawkerData[0].others_enddate)) {
-                        status = closedStatus;
-                    } else {
-                        status = openedStatus;
-                    }
+                if (DateWithinInterval(hawkerData[0].q1_cleaningstartdate, hawkerData[0].q1_cleaningenddate)) {
+                    status = closedStatus;
+                    // add 1 day to end date and convert to string
+                    estOpenDate = moment(hawkerData[0].q1_cleaningenddate, 'D/M/YYYY').add(1, 'd');
+                    estOpenDate = moment(estOpenDate).format('D/M/YYYY');
+                } else if (DateWithinInterval(hawkerData[0].q2_cleaningstartdate, hawkerData[0].q2_cleaningenddate)) {
+                    status = closedStatus;
+                    // add 1 day to end date and convert to string
+                    estOpenDate = moment(hawkerData[0].q2_cleaningenddate, 'D/M/YYYY').add(1, 'd');
+                    estOpenDate = moment(estOpenDate).format('D/M/YYYY');
+                } else if (DateWithinInterval(hawkerData[0].q3_cleaningstartdate, hawkerData[0].q3_cleaningenddate)) {
+                    status = closedStatus;
+                    // add 1 day to end date and convert to string
+                    estOpenDate = moment(hawkerData[0].q3_cleaningenddate, 'D/M/YYYY').add(1, 'd');
+                    estOpenDate = moment(estOpenDate).format('D/M/YYYY');
+                } else if (DateWithinInterval(hawkerData[0].q4_cleaningstartdate, hawkerData[0].q4_cleaningenddate)) {
+                    status = closedStatus;
+                    // add 1 day to end date and convert to string
+                    estOpenDate = moment(hawkerData[0].q4_cleaningenddate, 'D/M/YYYY').add(1, 'd');
+                    estOpenDate = moment(estOpenDate).format('D/M/YYYY');
+                } else if (DateWithinInterval(hawkerData[0].others_startdate, hawkerData[0].others_enddate)) {
+                    status = closedStatus;
+                    // add 1 day to end date and convert to string
+                    estOpenDate = moment(hawkerData[0].others_enddate, 'D/M/YYYY').add(1, 'd');
+                    estOpenDate = moment(estOpenDate).format('D/M/YYYY');
+                } else {
+                    status = openedStatus;
+                }
             }
 
             // some names contain address, need to filter away
@@ -139,72 +192,119 @@ async function getHawkerLayer(csvData) {
                 name = name.slice(0, -1);
             }
 
-            layer.bindPopup(`<table class="table table-striped">
-                <tr>
+            // set html for popup
+            let popupHTML = `<table class="table table-striped">
+            <tr>
+                <th>
+                    Name:
+                </th>
+                <td>
+                    ${name}
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    Address:
+                </th>
+                <td>
+                    ${address}
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    Description:
+                </th>
+                <td>
+                    ${description}
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    Number of food stalls:
+                </th>
+                <td>
+                    ${foodstalls}
+                </td>
+            </tr>`;
+            if (hasMarket) {
+                popupHTML += `<tr>
                     <th>
-                        Name:
+                        Number of market stalls:
                     </th>
                     <td>
-                        ${name}
+                        ${marketstalls}
                     </td>
-                </tr>
-                <tr>
-                    <th>
-                        Address:
+                </tr>`;
+            }
+            popupHTML += `<tr>
+                <th>
+                    Availability:
+                </th>
+                <td>
+                    ${status}
+                </td>
+            </tr>`;
+            if (estOpenDate != "" && estOpenDate != undefined) {
+                popupHTML += `<th>
+                        Est. opening date:
                     </th>
                     <td>
-                        ${address}
+                        ${estOpenDate}
                     </td>
-                </tr>
-                <tr>
-                    <th>
-                        Description:
-                    </th>
-                    <td>
-                        ${description}
-                    </td>
-                </tr>
-                <tr>
-                    <th>
-                        Number of food stalls:
-                    </th>
-                    <td>
-                        ${foodstalls}
-                    </td>
-                </tr>
-                <tr>
-                    <th>
-                        Availability:
-                    </th>
-                    <td>
-                        ${status}
-                    </td>
-                </tr>
-                <tr>
+                </tr>`;
+            }
+            popupHTML += `<tr>
                     <td colspan="2">
                         <img src="${photourl}" style="width: 300px" />
                     </td>
                 </tr>
                 <tfoot>
                     <td colspan="2">
-                        <a class="btn btn-success active" role="button" onClick="getDirections(${lat_coord}, ${lng_coord}, '${name}')">Get Directions</a>
+                        <a class="btn btn-success active" role="button" onClick="getDirections('${coordinates}', '${name}')">Get Directions</a>
                     </td>
                 </tfoot>
-            </table>`);
+            </table>`;
+
+            layer.bindPopup(popupHTML);
+            if (hasMarket) {
+                marketClusterLayer.addLayer(layer);
+            }
+            else {
+                hawkerClusterLayer.addLayer(layer);
+            }
         }
-    }).addTo(markerClusterLayer);
+    }).addTo(defaultClusterLayer);
 };
 
-// load CSV file data and combine with geojson
-async function loadHawkerData() {
-    let response = await axios.get('data/dates-of-hawker-centres-closure.csv');
-    let json = await csv().fromString(response.data);
-    await getHawkerLayer(json);
+function addMapLayers() {
+    let baseLayers = {
+        "<span class='control-layers-text pe-4'>All</span>": defaultClusterLayer,
+        "<span class='control-layers-text'>Hawker Only</span><img src='images/hawker-pin-icon.png' class='control-hawker-img' />": hawkerClusterLayer,
+        "<span class='control-layers-text pe-1'>Hawker & Market</span><img src='images/market-pin-icon.png' class='control-market-img' />": marketClusterLayer
+    };
+
+    L.control.layers(baseLayers, null, {collapsed: false}).addTo(map);
+    defaultClusterLayer.addTo(map);
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
-    await loadHawkerData();
-    markerClusterLayer.addTo(map);
+    // load all local hawker data
+    let csv = await loadCSVHawkerData();
+    let geojson = await loadGEOJSONHawkerData();
+
+    // create map layers
+    createMapLayers(csv, geojson);
+
+    // customise marker icons
+    hawkerClusterLayer.eachLayer(function(layer) {
+        layer.setIcon(hawkerIcon);
+    });
+    marketClusterLayer.eachLayer(function(layer) {
+        layer.setIcon(marketIcon);
+    });
+
+    // add map layers and control to map
+    addMapLayers();
 });
 
 // Get Directions custom map control
@@ -229,10 +329,11 @@ L.control.direction = function(opts) {
 let destName;
 let divDirection;
 let infoDirection = document.getElementById('info-direction');
+let btnClear = document.getElementById('clear-direction');
 
 // Get Directions button click
-function getDirections(lat, lng, name) {
-    endCoords = [ lng, lat ];
+function getDirections(coordinates, name) {
+    endCoords = [coordinates.split(',')[0], coordinates.split(',')[1]];
     destName = name;
     divDirection = L.control.direction({ position: 'topright'}).addTo(map);
     currentStep = START;
@@ -264,6 +365,7 @@ function updateRoute() {
         infoDirection.className = "d-block";
         infoDirection.innerHTML = "<p>From Start point to " + destName + ":</p>";
         infoDirection.innerHTML += directionsHTML;
+        btnClear.className = "d-block";
 
         startCoords = null;
         endCoords = null;
@@ -296,6 +398,14 @@ map.on("click", (e) => {
         updateRoute();
     }
 });
+
+btnClear.addEventListener('click', function() {
+    startPointLayer.clearLayers();
+    routeLinesLayer.clearLayers();
+    infoDirection.innerHTML = "";
+    currentStep = WAIT;
+    divDirection.remove(map);
+})
 
 // popovers at footer links
 $(function () {
