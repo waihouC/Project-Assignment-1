@@ -34,6 +34,30 @@ body {
     }
 }
 
+.leaflet-control-layers {
+    width: 350px;
+}
+
+.leaflet-control-layers-base {
+    display: flex !important;
+    align-items: baseline !important;
+    justify-content: space-around !important;
+}
+
+.control-layers-text {
+    font-family: Arial, Helvetica, Verdana;
+    font-weight: bold;
+}
+
+.control-hawker-img {
+    width: 40px;
+    padding-right: 15px;
+}
+
+.control-market-img {
+    width: 20px;
+}
+
 #info {
     height: 30vh;
     background-color: skyblue;
@@ -70,15 +94,22 @@ body {
 }
 
 #info-direction {
-    max-height: 27vh;
+    height: 27vh;
+    width: 100%;
     overflow-y: auto; /* Show a scrollbar if needed */
     background: white;
     font-family: Arial, Helvetica, Verdana;
     line-height: 1.5;
     padding: 10px;
     margin-top: 15px;
+    margin-right: 15px;
 }
 
 #info-direction > p {
     font-weight: bold;
+}
+
+#clear-direction {
+    padding: 10px;
+    margin-top: 15px;
 }
