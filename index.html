@@ -13,8 +13,9 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
 
     <!-- Bootstrap CSS -->
-    <link href="styles\lib\bootstrap\css\bootstrap.min.css" rel="stylesheet" />
-    <link href="styles\lib\bootstrap-social\bootstrap-social.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-social/5.0.0/bootstrap-social.min.css" rel="stylesheet" media="all">
     <link href="styles\lib\fontawesome-5.15.3\css\all.css" rel="stylesheet" />
 
     <!-- Custom CSS -->
@@ -32,7 +33,7 @@
           </a>
         </div>
         <div class="container-fluid navbar-light gray-300">
-            <span class="navbar-text mx-auto">
+            <span class="navbar-text mx-auto fw-bold">
                 Your One-stop Hawker Guide
             </span>
         </div>
@@ -59,9 +60,10 @@
     <!-- Info -->
     <section id="info">
       <div class="row justify-content-center">
-        <div class="col-11 col-lg-7">
+        <div class="col-11 col-lg-7 d-flex align-items-start">
           <div id="info-direction" class="d-none">
           </div>
+          <button class="btn btn-secondary d-none" id="clear-direction">Clear</button>
         </div>
       </div>
     </section>
@@ -98,7 +100,7 @@
               <i class="fab fa-tumblr"></i>
             </a>
           </div>
-          <!-- links -->
+          <!-- popover links -->
           <div class="col-12 col-lg-6 d-flex align-items-center justify-content-center footer-links">
             <h5>LINKS</h5>
             <a tabindex="0" class="text-reset popover-about" role="button" data-toggle="popover">About Us</a>
@@ -131,10 +133,19 @@
    <script src="https://unpkg.com/@esri/arcgis-rest-auth@3.0.0/dist/umd/auth.umd.js"></script>
   
     <!-- jQuery -->
-    <script src="scripts\lib\jquery\dist\jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
     <!-- Bootstrap Bundle with Popper -->
-    <script src="styles\lib\bootstrap\js\bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <!-- SVG with JavaScript -->
+    <script src="styles\lib\fontawesome-5.15.3\js\all.js"></script>
+    
+    <!-- Custom scripts -->
+    <script src="scripts\script.js"></script>
+  </body>
+</html>
+
     <!-- SVG with JavaScript -->
     <script src="styles\lib\fontawesome-5.15.3\js\all.js"></script>
     
