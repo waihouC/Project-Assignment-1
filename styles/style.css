@@ -24,6 +24,15 @@ body {
     width: 86vw !important;
 } 
 
+.leaflet-control-layers {
+    width: revert;
+}
+
+.leaflet-control-layers-base {
+    display: revert;
+}
+
+/* for large screens */
 @media screen and (min-width: 900px) {
     .leaflet-control-geocoder-form input{
         width: 50vw !important;
@@ -32,16 +41,16 @@ body {
     .leaflet-control-geocoder-alternatives > li {
         width: 51vw !important;
     }
-}
 
-.leaflet-control-layers {
-    width: 350px;
-}
+    .leaflet-control-layers {
+        width: 350px !important;
+    }
 
-.leaflet-control-layers-base {
-    display: flex !important;
-    align-items: baseline !important;
-    justify-content: space-around !important;
+    .leaflet-control-layers-base {
+        display: flex !important;
+        align-items: baseline !important;
+        justify-content: space-around !important;
+    }
 }
 
 .control-layers-text {
