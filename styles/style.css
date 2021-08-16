@@ -24,14 +24,6 @@ body {
     width: 86vw !important;
 } 
 
-.leaflet-control-layers {
-    width: revert;
-}
-
-.leaflet-control-layers-base {
-    display: revert;
-}
-
 /* for large screens */
 @media screen and (min-width: 900px) {
     .leaflet-control-geocoder-form input{
