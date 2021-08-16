@@ -11,7 +11,7 @@ let mq = window.matchMedia("(max-width: 768px)");
 if (mq.matches) {
     map.setMinZoom(11); // mobile size
 } else {
-    map.setMinZoom(12); // desktop size
+    map.setMinZoom(12); // desktop or tablet size
 }
 
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
@@ -265,7 +265,11 @@ function createMapLayers(csvData, geoData) {
                 </tfoot>
             </table>`;
 
-            layer.bindPopup(popupHTML);
+            const popup = L.popup({
+                closeOnClick: false
+            }).setContent(popupHTML);
+            layer.bindPopup(popup);
+            
             if (hasMarket) {
                 marketClusterLayer.addLayer(layer);
             }
