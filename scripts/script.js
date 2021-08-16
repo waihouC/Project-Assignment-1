@@ -269,7 +269,7 @@ function createMapLayers(csvData, geoData) {
                 closeOnClick: false
             }).setContent(popupHTML);
             layer.bindPopup(popup);
-            
+
             if (hasMarket) {
                 marketClusterLayer.addLayer(layer);
             }
@@ -370,6 +370,9 @@ function updateRoute() {
         infoDirection.innerHTML = "<p>From Start point to " + destName + ":</p>";
         infoDirection.innerHTML += directionsHTML;
         btnClear.className = "d-block";
+
+        // close previous popup
+        map.closePopup();
 
         startCoords = null;
         endCoords = null;
