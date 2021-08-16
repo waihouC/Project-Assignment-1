@@ -169,7 +169,7 @@ The programming languages, frameworks, tools and APIs used in the creation of th
 
 ## Testing ##
 
-Testing is done mainly on the following devices:
+Testing is done mainly on the following devices, and in conjunction with Chrome Developer Console:
 * Google Chrome on desktop
 * Microsoft Edge on desktop
 * Google Chrome on Samsung S21+
