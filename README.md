@@ -57,10 +57,12 @@ A live website can be accessed here: https://waihouc.github.io/Project-Assignmen
 ### Current Feature List ###
 
 1.	Interactive Map
+
 The interactive map provides the overall view of hawker center locations in Singapore. The interactive map also provides a control 
 at the top right corner to filter between ‘Hawker only’ and ‘Hawker and Marker’ categories. 
 
 2.	Marker Popups
+
 Marker popups provide detailed information about a hawker center such as:
 * Name
 * Address
@@ -71,18 +73,22 @@ Marker popups provide detailed information about a hawker center such as:
 * Image of the hawker center
 
 3.	Search Bar
+
 The search bar allows users to input a location query to search on the map. The search bar displays search results in a dropdown for user selection.
 Upon selection, the map will focus and drop a pin on the selected area.
 
 4.	Routing and Direction Information
+
 This feature can be found inside individual popups by clicking the ‘Get Directions’ button. The feature displays the fastest route from user 
 selected starting point on the map to the hawker center as its destination. Step-by-step directions are listed in a textbox below the map.
 
 5.	Submit Feedback and Site Information
+
 Users can submit feedback to the site owner by clicking ‘Give Feedback’ link found on the right side of the site footer. 
 Other site information can also be found here.
 
 6.	Social Media Links
+
 Media-savvy users can connect with site owners using social media links found on the left side of the site footer.
 
 ### Future Feature List ###
