@@ -255,7 +255,7 @@ function createMapLayers(csvData, geoData) {
             }
             popupHTML += `<tr>
                     <td colspan="2">
-                        <img src="${photourl}" style="width: 300px" />
+                        <img src="${photourl}" style="width: 280px" />
                     </td>
                 </tr>
                 <tfoot>
